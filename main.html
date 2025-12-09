@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INanimO、、｜Smart Link</title>
+<style>
+  body {
+    font-family: sans-serif;
+    background: #0b0b10;
+    color: #eee;
+    padding: 30px;
+    text-align: center;
+  }
+  .jacket {
+    width: 260px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+  .btn {
+    display: block;
+    margin: 12px auto;
+    padding: 14px 18px;
+    width: 80%;
+    max-width: 350px;
+    background: #6a4fcf;
+    border-radius: 6px;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+
+<h2 id="title">Loading…</h2>
+<img id="jacket" class="jacket" src="" alt="jacket">
+
+<div id="links"></div>
+
+<script>
+  // URLから id (linkco ID) を取得
+  const params = new URLSearchParams(location.search);
+  const id = params.get("id");
+
+  // 曲タイトル（必要ならここに追加）
+  const titles = {
+    "abcdEF1": "寂寥戦歌",
+    "ghijkL2": "ナムネス",
+    "mnopQ3": "ネアニオン",
+    // ← 曲が増えたらこれに1行追加するだけ
+  };
+
+  // ジャケ画像のパス
+  const jackets = {
+    "abcdEF1": "img/senko.jpg",
+    "ghijkL2": "img/numbness.jpg",
+    "mnopQ3": "img/neanion.jpg",
+  };
+
+  if (id) {
+    // タイトル & ジャケ設定
+    document.getElementById("title").textContent = titles[id] || "INanimO、、";
+    document.getElementById("jacket").src = jackets[id] || "";
+
+    // 基本の linkco URL
+    const base = `https://linkco.re/${id}`;
+
+    // サブスクの自動生成
+    const services = {
+      "Apple Music": `${base}?utm_source=apple`,
+      "Spotify": `${base}?utm_source=spotify`,
+      "YouTube Music": `${base}?utm_source=youtube`,
+      "LINE MUSIC": `${base}?utm_source=line`,
+      "Amazon Music": `${base}?utm_source=amazon`,
+    };
+
+    // HTML に追加
+    const linksDiv = document.getElementById("links");
+    for (const [name, url] of Object.entries(services)) {
+      const a = document.createElement("a");
+      a.className = "btn";
+      a.href = url;
+      a.textContent = name;
+      linksDiv.appendChild(a);
+    }
+  }
+</script>
+
+</body>
+</html>
