@@ -9,14 +9,22 @@
     font-family: sans-serif;
     background: #0b0b10;
     color: #eee;
-    padding: 30px;
+    padding: 30px 16px;
     text-align: center;
   }
+
+  .wrapper {
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
   .jacket {
     width: 260px;
+    max-width: 80%;
     border-radius: 8px;
     margin-bottom: 20px;
   }
+
   .btn {
     display: block;
     margin: 12px auto;
@@ -29,41 +37,132 @@
     color: white;
     font-weight: bold;
   }
+
+  /* 曲一覧用 */
+  .track-list {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .track {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #151520;
+    text-decoration: none;
+    color: #eee;
+  }
+
+  .track-jacket {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  .track-title {
+    text-align: left;
+    font-weight: bold;
+    font-size: 14px;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: #aaa;
+    text-decoration: none;
+    font-size: 14px;
+  }
 </style>
 </head>
 <body>
+<div class="wrapper">
 
-<h2 id="title">Loading…</h2>
-<img id="jacket" class="jacket" src="" alt="jacket">
+  <!-- ホーム（曲一覧） -->
+  <div id="home">
+    <h1>INanimO、、｜Smart Link</h1>
+    <p>作品を選択してください。</p>
+    <div id="trackList" class="track-list"></div>
+  </div>
 
-<div id="links"></div>
+  <!-- 個別曲ページ -->
+  <div id="detail" style="display:none">
+    <h2 id="title">Loading…</h2>
+    <img id="jacket" class="jacket" src="" alt="jacket">
+    <div id="links"></div>
+    <a href="./" class="back-link">← 作品一覧に戻る</a>
+  </div>
+
+</div>
 
 <script>
-  // URLから id (linkco ID) を取得
+  // URL から id (linkco ID) を取得
   const params = new URLSearchParams(location.search);
   const id = params.get("id");
 
-  // 曲タイトル（必要ならここに追加）
-  const titles = {
-    "Xqb83UQN": "寂寥戦歌",
-    "eqRu0BZX": "NUMBNESS",
-    "fMsg46gH": "ネアニオン",
-    "DSR50Zg4": "天動説",
-    // ← 曲が増えたらこれに1行追加するだけ
+  const homeEl = document.getElementById("home");
+  const detailEl = document.getElementById("detail");
+
+  // 曲データ
+  const tracks = {
+    "Xqb83UQN": {
+      title: "寂寥戦歌",
+      jacket: "./assets/Sekiryo Senka.PNG",
+    },
+    "eqRu0BZX": {
+      title: "NUMBNESS",
+      jacket: "./assets/numbness.jpg",
+    },
+    "fMsg46gH": {
+      title: "ネアニオン",
+      jacket: "./assets/neanion.JPG",
+    },
+    "DSR50Zg4": {
+      title: "天動説",
+      jacket: "./assets/tendousetsu.JPG",
+    },
+    // 曲が増えたらここに追加
+    // "XXXXXXX": { title: "タイトル", jacket: "./assets/xxx.jpg" },
   };
 
-  // ジャケ画像のパス
-  const jackets = {
-    "Xqb83UQN": "./assets/Sekiryo Senka.PNG",
-    "eqRu0BZX": "./assets/numbness.jpg",
-    "fMsg46gH": "./assets/neanion.JPG",
-    "DSR50Zg4": "./assets/tendousetsu.JPG",
-  };
+  // id がない場合 → ホーム画面（曲一覧）
+  if (!id) {
+    homeEl.style.display = "block";
+    detailEl.style.display = "none";
 
-  if (id) {
-    // タイトル & ジャケ設定
-    document.getElementById("title").textContent = titles[id] || "INanimO、、";
-    document.getElementById("jacket").src = jackets[id] || "";
+    const listEl = document.getElementById("trackList");
+
+    for (const [trackId, data] of Object.entries(tracks)) {
+      const a = document.createElement("a");
+      a.className = "track";
+      a.href = `?id=${trackId}`;
+
+      a.innerHTML = `
+        <img src="${data.jacket}" alt="${data.title}" class="track-jacket" onerror="this.style.display='none'">
+        <span class="track-title">${data.title}</span>
+      `;
+
+      listEl.appendChild(a);
+    }
+  } else {
+    // id がある場合 → 個別曲ページ
+    homeEl.style.display = "none";
+    detailEl.style.display = "block";
+
+    const track = tracks[id];
+    const title = track ? track.title : "INanimO、、";
+    const jacketPath = track ? track.jacket : "";
+
+    // タイトル＆ジャケ
+    document.getElementById("title").textContent = title;
+    const jacketImg = document.getElementById("jacket");
+    jacketImg.src = jacketPath;
+    jacketImg.onerror = () => { jacketImg.style.display = "none"; };
 
     // 基本の linkco URL
     const base = `https://linkco.re/${id}`;
@@ -91,3 +190,4 @@
 
 </body>
 </html>
+
